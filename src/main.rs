@@ -2,6 +2,8 @@ use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
 
+
+
 fn main() {
     let a: [bool; 5] = [true, false, true, false, false];
     let s = String::from("Hello everybody!");
@@ -15,7 +17,8 @@ fn main() {
     println!("Let's go!");
     let secret = rand::thread_rng().gen_range(1, 101);
     println!("Guess a number from 1 to 100.");
-    loop {
+    let mut done = false;
+    while !done {
         let mut input = String::new();
         println!("Enter your guess:");
         io::stdin()
@@ -25,14 +28,12 @@ fn main() {
             Ok(num) => num,
             Err(_) => continue,
         };
-        let (prompt, done) = match guess.cmp(&secret) {
+        let (prompt, done_response) = match guess.cmp(&secret) {
             Ordering::Less => ("less than", false),
             Ordering::Greater => ("greater than", false),
             Ordering::Equal => ("equal to", true),
         };
         println!("Your guess {} was {} the secret.", guess, prompt);
-        if done {
-            break;
-        }
+        done = done_response;
     }
 }
