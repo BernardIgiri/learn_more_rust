@@ -1,9 +1,9 @@
-use std::io;
 use rand::Rng;
 use std::cmp::Ordering;
+use std::io;
 
 fn main() {
-    let a:[bool; 5] = [true, false, true, false, false];
+    let a: [bool; 5] = [true, false, true, false, false];
     let s = String::from("Hello everybody!");
     let hello = &s[0..5];
     let everybody = &s[6..15];
@@ -18,8 +18,13 @@ fn main() {
     loop {
         let mut input = String::new();
         println!("Enter your guess:");
-        io::stdin().read_line(&mut input).expect("Failed to read line!");
-        let guess:u32 = input.trim().parse().expect("Please type a number.");
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line!");
+        let guess: u32 = match input.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
         let (prompt, done) = match guess.cmp(&secret) {
             Ordering::Less => ("less than", false),
             Ordering::Greater => ("greater than", false),
