@@ -2,6 +2,8 @@ use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
 
+mod greetings;
+
 fn main() {
     let a: [bool; 5] = [true, false, true, false, false];
     let s = String::from("Hello everybody!");
@@ -34,5 +36,5 @@ fn main() {
         println!("Your guess {} was {} the secret.", guess, prompt);
         done = done_response;
     }
-    println!("You won!");
+    println!("{} You won!", greetings::english::greet());
 }
