@@ -5,6 +5,7 @@ use glam::Vec2;
 use greetings::english::greet;
 use rand::Rng;
 use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::io;
 
 fn main() {
@@ -21,10 +22,23 @@ fn main() {
     guessing_game();
     let mut car = vehicles::cars::Car::new_ferrari();
     println!("{} You won! Your prize is a {:?}", greet(), car);
-    if prompt(&"Go for a drive?".to_string()) {
+    if confirm("Go for a drive?".to_string()) {
         test_drive(&mut car);
         println!("{:?}", car);
     }
+    let story = prompt("What will you do with the rest of your winnings?".to_string());
+    let freq = word_freq(story);
+    println!("Word frequency\n{:?}", freq);
+}
+
+fn word_freq(text: String) -> HashMap<String, u32> {
+    let words = text.split_whitespace();
+    let mut freq = HashMap::new();
+    for w in words {
+        let count = freq.entry(w.to_lowercase()).or_insert(0);
+        *count += 1;
+    }
+    freq
 }
 
 fn test_drive(car: &mut vehicles::cars::Car) {
@@ -108,11 +122,20 @@ fn guessing_game() {
     }
 }
 
-fn prompt(question: &String) -> bool {
+fn confirm(text: String) -> bool {
     let mut input = String::new();
-    println!("{}? (y/n)", question);
+    println!("{} (y/n)", text);
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line!");
     input.trim().eq_ignore_ascii_case("y")
+}
+
+fn prompt(text: String) -> String {
+    let mut input = String::new();
+    println!("{}", text);
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read line!");
+    input
 }
