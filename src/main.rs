@@ -25,22 +25,25 @@ fn main() {
     guessing_game();
     let mut car = vehicles::cars::Car::new_ferrari();
     println!("{} You won! Your prize is a {:?}", greet(), car);
-    if confirm(&"Go for a drive?".to_string()) {
+    if confirm("Go for a drive?") {
         test_drive(&mut car);
         println!("{:?}", car);
     }
-    let story = prompt(&"What will you do with your winnings?".to_string());
+    let story = prompt("What will you do with your winnings?");
     let words = word_freq(&story);
     let letters = letter_freq(&story);
-    println!(
-        "Word frequency\n{:?}\nLetter frequency\n{:?}",
-        words, letters
-    );
+    let lorem_ipsum_japanese = letter_freq("旅ロ京青利セムレ弱改フヨス波府かばぼ意送でぼ調掲察たス日西重ケアナ住橋ユムミク順待ふかんぼ人奨貯鏡すびそ。");
+    let lorem_ipsum_russian = letter_freq("Лорем ипсум долор сит амет, пер цлита поссит ех, ат мунере фабулас петентиум сит. Иус цу цибо саперет сцрипсерит,");
+    println!("Word frequency\n{:?}", words);
+    println!("Letter frequency\n{:?}", letters);
+    println!("Lorem Ipsum Japanese\n{:?}", lorem_ipsum_japanese);
+    println!("Lorem Ipsum Russian\n{:?}", lorem_ipsum_russian);
 }
 
-fn word_freq(text: &String) -> HashMap<String, u32> {
+fn word_freq<S: Into<String>>(text: S) -> HashMap<String, u32> {
     let mut freq = HashMap::new();
-    let words = text.unicode_words().collect::<Vec<&str>>();
+    let s = text.into();
+    let words = s.unicode_words().collect::<Vec<&str>>();
     for w in words {
         let count = freq.entry(w.to_lowercase()).or_insert(0);
         *count += 1;
@@ -48,9 +51,10 @@ fn word_freq(text: &String) -> HashMap<String, u32> {
     freq
 }
 
-fn letter_freq(text: &String) -> HashMap<String, u32> {
+fn letter_freq<S: Into<String>>(text: S) -> HashMap<String, u32> {
     let mut freq = HashMap::new();
-    let graphemes = UnicodeSegmentation::graphemes(text.as_str(), true).collect::<Vec<&str>>();
+    let s = text.into();
+    let graphemes = UnicodeSegmentation::graphemes(s.as_str(), true).collect::<Vec<&str>>();
     for l in graphemes {
         let count = freq.entry(l.to_lowercase()).or_insert(0);
         *count += 1;
@@ -139,7 +143,7 @@ fn guessing_game() {
     }
 }
 
-fn confirm(text: &String) -> bool {
+fn confirm<S: Into<String> + std::fmt::Display>(text: S) -> bool {
     let mut input = String::new();
     println!("{} (y/n)", text);
     io::stdin()
@@ -148,11 +152,11 @@ fn confirm(text: &String) -> bool {
     input.trim().eq_ignore_ascii_case("y")
 }
 
-fn prompt(text: &String) -> String {
+fn prompt<S: Into<String> + std::fmt::Display>(text: S) -> String {
     let mut input = String::new();
     println!("{}", text);
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line!");
-    input
+    input.trim().to_string()
 }
