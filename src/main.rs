@@ -1,12 +1,15 @@
+extern crate unicode_segmentation;
+
 mod greetings;
 mod vehicles;
 
 use glam::Vec2;
 use greetings::english::greet;
+use hashbrown::HashMap;
 use rand::Rng;
 use std::cmp::Ordering;
-use std::collections::HashMap;
 use std::io;
+use unicode_segmentation::UnicodeSegmentation;
 
 fn main() {
     let a: [bool; 5] = [true, false, true, false, false];
@@ -22,20 +25,34 @@ fn main() {
     guessing_game();
     let mut car = vehicles::cars::Car::new_ferrari();
     println!("{} You won! Your prize is a {:?}", greet(), car);
-    if confirm("Go for a drive?".to_string()) {
+    if confirm(&"Go for a drive?".to_string()) {
         test_drive(&mut car);
         println!("{:?}", car);
     }
-    let story = prompt("What will you do with the rest of your winnings?".to_string());
-    let freq = word_freq(story);
-    println!("Word frequency\n{:?}", freq);
+    let story = prompt(&"What will you do with your winnings?".to_string());
+    let words = word_freq(&story);
+    let letters = letter_freq(&story);
+    println!(
+        "Word frequency\n{:?}\nLetter frequency\n{:?}",
+        words, letters
+    );
 }
 
-fn word_freq(text: String) -> HashMap<String, u32> {
-    let words = text.split_whitespace();
+fn word_freq(text: &String) -> HashMap<String, u32> {
     let mut freq = HashMap::new();
+    let words = text.unicode_words().collect::<Vec<&str>>();
     for w in words {
         let count = freq.entry(w.to_lowercase()).or_insert(0);
+        *count += 1;
+    }
+    freq
+}
+
+fn letter_freq(text: &String) -> HashMap<String, u32> {
+    let mut freq = HashMap::new();
+    let graphemes = UnicodeSegmentation::graphemes(text.as_str(), true).collect::<Vec<&str>>();
+    for l in graphemes {
+        let count = freq.entry(l.to_lowercase()).or_insert(0);
         *count += 1;
     }
     freq
@@ -122,7 +139,7 @@ fn guessing_game() {
     }
 }
 
-fn confirm(text: String) -> bool {
+fn confirm(text: &String) -> bool {
     let mut input = String::new();
     println!("{} (y/n)", text);
     io::stdin()
@@ -131,7 +148,7 @@ fn confirm(text: String) -> bool {
     input.trim().eq_ignore_ascii_case("y")
 }
 
-fn prompt(text: String) -> String {
+fn prompt(text: &String) -> String {
     let mut input = String::new();
     println!("{}", text);
     io::stdin()

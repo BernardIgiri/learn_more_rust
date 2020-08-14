@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 rand = "0.4.0"
 glam = "0.9.3"
+hashbrown = "0.3"
+unicode-segmentation = "1.6.0"
