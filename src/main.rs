@@ -33,7 +33,7 @@ fn main() {
         );
     }
     println!("Let's go!");
-    let score = guessing_game();
+    let score = guessing_game(1, 50);
     let mut car = get_prize(score);
     println!(
         "{} You won! Your prize is a brand new {}",
@@ -144,10 +144,10 @@ fn test_drive(car: &mut vehicles::cars::Car) {
     }
 }
 
-fn guessing_game() -> u32 {
+fn guessing_game(min: u32, max: u32) -> u32 {
     let mut guess_count = 0;
-    let secret = rand::thread_rng().gen_range(1, 101);
-    println!("Guess a number from 1 to 100.");
+    let secret = rand::thread_rng().gen_range(min, max + 1);
+    println!("Guess a number from {} to {}.", min, max);
     let mut done = false;
     while !done {
         let mut input = String::new();
@@ -168,7 +168,7 @@ fn guessing_game() -> u32 {
         done = done_response;
         guess_count += 1;
     }
-    math::fib_closest_inverse(guess_count)
+    math::fib_closest_inverse(guess_count - 1)
 }
 
 fn confirm<S: Into<String> + std::fmt::Display>(text: S) -> bool {
