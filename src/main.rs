@@ -1,6 +1,7 @@
 extern crate unicode_segmentation;
 
 mod greetings;
+mod math;
 mod vehicles;
 
 use glam::Vec2;
@@ -18,26 +19,50 @@ fn main() {
     let everybody = &s[6..15];
     let s2 = &s;
     println!("{} {} {} {}", hello, everybody, s2, a[2]);
-    for n in (1..10).rev() {
-        println!("{}", n);
+    for n in (0..10).rev() {
+        let fib_description = match math::fib_perfect_inverse(n) {
+            Some(_) => "perfect inverse",
+            None => "inverse",
+        };
+        println!(
+            "{} has a fib of {} and {} fib of {}",
+            n,
+            math::fib(n).unwrap_or(0),
+            fib_description,
+            math::fib_closest_inverse(n),
+        );
     }
     println!("Let's go!");
-    guessing_game();
-    let mut car = vehicles::cars::Car::new_ferrari();
-    println!("{} You won! Your prize is a {:?}", greet(), car);
+    let score = guessing_game();
+    let mut car = get_prize(score);
+    println!(
+        "{} You won! Your prize is a brand new {}",
+        greet(),
+        car.name()
+    );
     if confirm("Go for a drive?") {
         test_drive(&mut car);
-        println!("{:?}", car);
     }
     let story = prompt("What will you do with your winnings?");
     let words = word_freq(&story);
     let letters = letter_freq(&story);
     let lorem_ipsum_japanese = letter_freq("旅ロ京青利セムレ弱改フヨス波府かばぼ意送でぼ調掲察たス日西重ケアナ住橋ユムミク順待ふかんぼ人奨貯鏡すびそ。");
     let lorem_ipsum_russian = letter_freq("Лорем ипсум долор сит амет, пер цлита поссит ех, ат мунере фабулас петентиум сит. Иус цу цибо саперет сцрипсерит,");
-    println!("Word frequency\n{:?}", words);
-    println!("Letter frequency\n{:?}", letters);
-    println!("Lorem Ipsum Japanese\n{:?}", lorem_ipsum_japanese);
-    println!("Lorem Ipsum Russian\n{:?}", lorem_ipsum_russian);
+    println!("Word frequency\n{:#?}", words);
+    println!("Letter frequency\n{:#?}", letters);
+    println!("Lorem Ipsum Japanese\n{:#?}", lorem_ipsum_japanese);
+    println!("Lorem Ipsum Russian\n{:#?}", lorem_ipsum_russian);
+}
+
+fn get_prize(score: u32) -> vehicles::cars::Car {
+    match score {
+        0 => vehicles::cars::Car::new_ferrari(),
+        1 => vehicles::cars::Car::new_mercedes(),
+        2 => vehicles::cars::Car::new_mustang(),
+        3 => vehicles::cars::Car::new_sedan(),
+        4 => vehicles::cars::Car::new_pickup_truck(),
+        _ => vehicles::cars::Car::new_go_kart(),
+    }
 }
 
 fn word_freq<S: Into<String>>(text: S) -> HashMap<String, u32> {
@@ -119,7 +144,8 @@ fn test_drive(car: &mut vehicles::cars::Car) {
     }
 }
 
-fn guessing_game() {
+fn guessing_game() -> u32 {
+    let mut guess_count = 0;
     let secret = rand::thread_rng().gen_range(1, 101);
     println!("Guess a number from 1 to 100.");
     let mut done = false;
@@ -140,7 +166,9 @@ fn guessing_game() {
         };
         println!("Your guess {} was {} the secret.", guess, prompt);
         done = done_response;
+        guess_count += 1;
     }
+    math::fib_closest_inverse(guess_count)
 }
 
 fn confirm<S: Into<String> + std::fmt::Display>(text: S) -> bool {

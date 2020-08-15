@@ -11,3 +11,6 @@ rand = "0.4.0"
 glam = "0.9.3"
 hashbrown = "0.3"
 unicode-segmentation = "1.6.0"
+
+[dev-dependencies]
+float-cmp = "0.8.0"
