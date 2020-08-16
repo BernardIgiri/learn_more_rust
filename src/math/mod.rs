@@ -1,7 +1,6 @@
 pub struct FibonacciSequence {
-    previous: u32,
-    second_previous: u32,
-    result: Option<u32>,
+    previous: (u32, u32),
+    n: u8,
 }
 
 pub fn fib(n: u32) -> Option<u32> {
@@ -9,25 +8,21 @@ pub fn fib(n: u32) -> Option<u32> {
     fib_it.nth(n as usize)
 }
 
-pub fn fib_closest_inverse(n: u32) -> u32 {
-    let fib_it = FibonacciSequence::new();
-    let mut previous = 0;
-    let mut count = 0;
-    for value in fib_it {
-        if value >= n {
-            return if value - n > n - previous {
-                count - 1
-            } else {
-                count
-            };
-        }
-        previous = value;
-        count += 1;
-    }
-    previous
+pub fn fib_inverse_rounded_up(n: u32) -> Option<u32> {
+    let mut fib_it = FibonacciSequence::new();
+    return match fib_it.position(|value| value >= n) {
+        Some(v) => Some(v as u32),
+        None => None,
+    };
 }
 
-pub fn fib_perfect_inverse(n: u32) -> Option<u32> {
+/// Finds the number v such that fib(v) = n given n
+/// # Example
+/// ```
+/// let fib_num = fib_inverse(55).unwrap();
+/// assert_eq!(fib_num, 10);
+/// ```
+pub fn fib_inverse(n: u32) -> Option<u32> {
     let mut fib_it = FibonacciSequence::new();
     return match fib_it.position(|value| value == n) {
         Some(v) => Some(v as u32),
@@ -38,9 +33,8 @@ pub fn fib_perfect_inverse(n: u32) -> Option<u32> {
 impl FibonacciSequence {
     pub fn new() -> FibonacciSequence {
         FibonacciSequence {
-            previous: 1,
-            second_previous: 0,
-            result: Some(0),
+            previous: (1, 1),
+            n: 0,
         }
     }
 }
@@ -48,10 +42,20 @@ impl FibonacciSequence {
 impl Iterator for FibonacciSequence {
     type Item = u32;
     fn next(&mut self) -> Option<u32> {
-        let output = self.result;
-        self.result = self.previous.checked_add(self.second_previous);
-        self.second_previous = self.previous;
-        self.previous = self.result.unwrap_or(self.previous);
-        output
+        self.n += 1;
+        return match self.n {
+            1 => Some(0),
+            2 => Some(1),
+            3 => Some(1),
+            _ => match self.previous.0.checked_add(self.previous.1) {
+                Some(v) => {
+                    self.n = 3;
+                    self.previous.0 = self.previous.1;
+                    self.previous.1 = v;
+                    Some(v)
+                }
+                None => None,
+            },
+        };
     }
 }

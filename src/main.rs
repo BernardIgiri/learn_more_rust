@@ -19,17 +19,16 @@ fn main() {
     let everybody = &s[6..15];
     let s2 = &s;
     println!("{} {} {} {}", hello, everybody, s2, a[2]);
-    for n in (0..10).rev() {
-        let fib_description = match math::fib_perfect_inverse(n) {
-            Some(_) => "perfect inverse",
-            None => "inverse",
+    for n in (0..11).rev() {
+        let inverse = match math::fib_inverse(n) {
+            Some(v) => " and an inverse fib of ".to_string() + &v.to_string(),
+            None => "".to_string(),
         };
         println!(
-            "{} has a fib of {} and {} fib of {}",
+            "{} has a fib of {}{}",
             n,
             math::fib(n).unwrap_or(0),
-            fib_description,
-            math::fib_closest_inverse(n),
+            inverse,
         );
     }
     println!("Let's go!");
@@ -168,7 +167,12 @@ fn guessing_game(min: u32, max: u32) -> u32 {
         done = done_response;
         guess_count += 1;
     }
-    math::fib_closest_inverse(guess_count - 1)
+    calc_score(guess_count)
+}
+
+fn calc_score(guess_count: u32) -> u32 {
+    let r = math::fib_inverse_rounded_up(guess_count - 1).unwrap_or(0);
+    return if r > 2 { r - 1 } else { r };
 }
 
 fn confirm<S: Into<String> + std::fmt::Display>(text: S) -> bool {
@@ -187,4 +191,28 @@ fn prompt<S: Into<String> + std::fmt::Display>(text: S) -> String {
         .read_line(&mut input)
         .expect("Failed to read line!");
     input.trim().to_string()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn calc_score_uses_fibonacci() {
+        let guesses_to_score_map: [u32; 21] = [
+            0, 1, 2, 3, 4, 4, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7,
+        ];
+        //                             1  1  1  1  1  1  1  1  1  1  2  2
+        //  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1
+        let mut guess_count = 1;
+        for expected_score in guesses_to_score_map.iter() {
+            let actual_score = calc_score(guess_count);
+            assert_eq!(
+                *expected_score, actual_score,
+                "guess_count = {}",
+                guess_count
+            );
+            guess_count += 1;
+        }
+    }
 }
