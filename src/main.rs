@@ -94,17 +94,17 @@ fn format_vector(v: &Vec2) -> String {
     format!("({x:0>7.03}, {y:0>7.03})", x = v.x(), y = v.y())
 }
 
-fn animate_drive<S: Into<String>>(car: &mut vehicles::cars::Car, sound_effect: S, start: u32, end: u32) {
+fn animate_drive<S: Into<String>>(car: &mut vehicles::cars::Car, label: S, start: u32, end: u32) {
     let delay_time = time::Duration::from_millis(50);
-    let sound = sound_effect.into();
+    let label = label.into();
     for n in start..end {
         print!("\x1B[2J\x1B[1;1H");
         let v = format_vector(car.velocity());
         let h = format_vector(car.heading());
         println!(
-            "{} goes {}\nFrame {}\nVelocity {}\nHeading  {}",
+            "{} performing {} test.\nFrame {}\nVelocity {}\nHeading  {}\n",
             car.name(),
-            sound,
+            label,
             n,
             v,
             h,
@@ -116,15 +116,15 @@ fn animate_drive<S: Into<String>>(car: &mut vehicles::cars::Car, sound_effect: S
 
 fn test_drive(car: &mut vehicles::cars::Car) {
     car.set_state(vehicles::cars::State::Driving);
-    animate_drive(car, "Vrrm!", 1, 100);
+    animate_drive(car, "acceleration", 1, 100);
     car.set_state(vehicles::cars::State::Idle);
-    animate_drive(car, "Skrr!", 100, 200);
+    animate_drive(car, "braking", 100, 200);
     car.set_state(vehicles::cars::State::Driving);
-    animate_drive(car, "Donuts!", 200, 220);
+    animate_drive(car, "handling", 200, 220);
     car.set_state(vehicles::cars::State::Turning(Vec2::new(0.0, 1.0)));
-    animate_drive(car, "Brap! Brap!", 220, 300);
+    animate_drive(car, "steering", 220, 300);
     car.set_state(vehicles::cars::State::Parked);
-    animate_drive(car, "Stop! Skrr!", 300, 330);
+    animate_drive(car, "final braking", 300, 330);
 }
 
 fn guessing_game(min: u32, max: u32) -> u32 {
