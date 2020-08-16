@@ -3,6 +3,7 @@ extern crate unicode_segmentation;
 mod greetings;
 mod math;
 mod vehicles;
+mod data_types;
 
 use glam::Vec2;
 use greetings::english::greet;
@@ -10,6 +11,7 @@ use hashbrown::HashMap;
 use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
+use std::{thread, time};
 use unicode_segmentation::UnicodeSegmentation;
 
 fn main() {
@@ -21,7 +23,7 @@ fn main() {
     println!("{} {} {} {}", hello, everybody, s2, a[2]);
     for n in (0..11).rev() {
         let inverse = match math::fib_inverse(n) {
-            Some(v) => " and an inverse fib of ".to_string() + &v.to_string(),
+            Some(v) => format!(" and an inverse fib of {}.", v),
             None => "".to_string(),
         };
         println!(
@@ -48,9 +50,11 @@ fn main() {
     let lorem_ipsum_japanese = letter_freq("旅ロ京青利セムレ弱改フヨス波府かばぼ意送でぼ調掲察たス日西重ケアナ住橋ユムミク順待ふかんぼ人奨貯鏡すびそ。");
     let lorem_ipsum_russian = letter_freq("Лорем ипсум долор сит амет, пер цлита поссит ех, ат мунере фабулас петентиум сит. Иус цу цибо саперет сцрипсерит,");
     println!("Word frequency\n{:#?}", words);
-    println!("Letter frequency\n{:#?}", letters);
-    println!("Lorem Ipsum Japanese\n{:#?}", lorem_ipsum_japanese);
-    println!("Lorem Ipsum Russian\n{:#?}", lorem_ipsum_russian);
+    println!("Letter frequency\n{:?}", letters);
+    println!("Lorem Ipsum Japanese\n{:?}", lorem_ipsum_japanese);
+    println!("Lorem Ipsum Russian\n{:?}", lorem_ipsum_russian);
+    let my_box = data_types::MyBox::new(5);
+    println!("Box: {}", *my_box);
 }
 
 fn get_prize(score: u32) -> vehicles::cars::Car {
@@ -86,61 +90,41 @@ fn letter_freq<S: Into<String>>(text: S) -> HashMap<String, u32> {
     freq
 }
 
+fn format_vector(v: &Vec2) -> String {
+    format!("({x:0>7.03}, {y:0>7.03})", x = v.x(), y = v.y())
+}
+
+fn animate_drive<S: Into<String>>(car: &mut vehicles::cars::Car, sound_effect: S, start: u32, end: u32) {
+    let delay_time = time::Duration::from_millis(50);
+    let sound = sound_effect.into();
+    for n in start..end {
+        print!("\x1B[2J\x1B[1;1H");
+        let v = format_vector(car.velocity());
+        let h = format_vector(car.heading());
+        println!(
+            "{} goes {}\nFrame {}\nVelocity {}\nHeading  {}",
+            car.name(),
+            sound,
+            n,
+            v,
+            h,
+        );
+        thread::sleep(delay_time);
+        car.animate(0.23);
+    }
+}
+
 fn test_drive(car: &mut vehicles::cars::Car) {
-    println!("Vrrm!");
     car.set_state(vehicles::cars::State::Driving);
-    for n in 1..100 {
-        car.animate(0.23);
-        println!(
-            "Frame {} velocity {:?} heading {:?}",
-            n,
-            car.velocity(),
-            car.heading()
-        )
-    }
-    println!("Skrr!");
+    animate_drive(car, "Vrrm!", 1, 100);
     car.set_state(vehicles::cars::State::Idle);
-    for n in 100..200 {
-        car.animate(0.23);
-        println!(
-            "Frame {} velocity {:?} heading {:?}",
-            n,
-            car.velocity(),
-            car.heading()
-        )
-    }
-    println!("Donuts! Brap! Brap!");
+    animate_drive(car, "Skrr!", 100, 200);
     car.set_state(vehicles::cars::State::Driving);
-    for n in 200..220 {
-        car.animate(0.23);
-        println!(
-            "Frame {} velocity {:?} heading {:?}",
-            n,
-            car.velocity(),
-            car.heading()
-        )
-    }
+    animate_drive(car, "Donuts!", 200, 220);
     car.set_state(vehicles::cars::State::Turning(Vec2::new(0.0, 1.0)));
-    for n in 220..300 {
-        car.animate(0.23);
-        println!(
-            "Frame {} velocity {:?} heading {:?}",
-            n,
-            car.velocity(),
-            car.heading()
-        )
-    }
-    println!("Stop! Skrr!");
+    animate_drive(car, "Brap! Brap!", 220, 300);
     car.set_state(vehicles::cars::State::Parked);
-    for n in 300..330 {
-        car.animate(0.23);
-        println!(
-            "Frame {} velocity {:?} heading {:?}",
-            n,
-            car.velocity(),
-            car.heading()
-        )
-    }
+    animate_drive(car, "Stop! Skrr!", 300, 330);
 }
 
 fn guessing_game(min: u32, max: u32) -> u32 {
