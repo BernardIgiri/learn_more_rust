@@ -13,14 +13,25 @@ use std::cmp::Ordering;
 use std::io;
 use std::{thread, time};
 use unicode_segmentation::UnicodeSegmentation;
+use byteorder::{BigEndian, ReadBytesExt};
 
 fn main() {
-    let a: [bool; 5] = [true, false, true, false, false];
-    let s = String::from("Hello everybody!");
-    let hello = &s[0..5];
-    let everybody = &s[6..15];
-    let s2 = &s;
-    println!("{} {} {} {}", hello, everybody, s2, a[2]);
+    {
+        let buffer = [0u8, 10u8, 1u8, 1u8];
+        let mut reader = io::Cursor::new(buffer);
+        let num_float = reader.read_f32::<BigEndian>().unwrap_or(0.0);
+        reader.set_position(0);
+        let num_int = reader.read_i32::<BigEndian>().unwrap_or(0);
+        println!("float {} int {}", num_float, num_int);
+    }
+    {
+        let a: [bool; 5] = [true, false, true, false, false];
+        let s = String::from("Hello everybody!");
+        let hello = &s[0..5];
+        let everybody = &s[6..15];
+        let s2 = &s;
+        println!("{} {} {} {}", hello, everybody, s2, a[2]);
+    }
     for n in (0..11).rev() {
         let inverse = match math::fib_inverse(n) {
             Some(v) => format!(" and an inverse fib of {}.", v),
