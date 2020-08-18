@@ -12,6 +12,9 @@ glam = "0.9.3"
 hashbrown = "0.3"
 unicode-segmentation = "1.6.0"
 byteorder = "1.3.4"
+reqwest = { version = "0.10", features = ["json"] }
+tokio = { version = "0.2", features = ["full"] }
+unescape = "0.1.0"
 
 [dev-dependencies]
 float-cmp = "0.8.0"

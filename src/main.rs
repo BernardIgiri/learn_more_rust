@@ -14,6 +14,9 @@ use std::io;
 use std::{thread, time};
 use unicode_segmentation::UnicodeSegmentation;
 use byteorder::{BigEndian, ReadBytesExt};
+use unescape::unescape;
+
+const DATA_SOURCE_URL: &str = "https://raw.githubusercontent.com/BernardIgiri/learn_more_rust/master/data/book.txt";
 
 fn main() {
     {
@@ -66,6 +69,8 @@ fn main() {
     println!("Lorem Ipsum Russian\n{:?}", lorem_ipsum_russian);
     let my_box = data_types::MyBox::new(5);
     println!("Box: {}", *my_box);
+    println!("Story Time!");
+    read_story().unwrap();
 }
 
 fn get_prize(score: u32) -> vehicles::cars::Car {
@@ -210,4 +215,17 @@ mod test {
             guess_count += 1;
         }
     }
+}
+
+#[tokio::main]
+async fn read_story() -> Result<(), Box<dyn std::error::Error>> {
+    let resp = reqwest::get(DATA_SOURCE_URL)
+        .await?
+        .text_with_charset("utf-8")
+        .await?;
+    let story = unescape(&resp).unwrap();
+    let words = word_freq(&story);
+    let letters = letter_freq(&story);
+    println!("{}\n{:#?}\n{:?}", story, words, letters);
+    Ok(())
 }
