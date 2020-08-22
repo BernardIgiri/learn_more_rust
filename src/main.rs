@@ -1,22 +1,24 @@
 extern crate unicode_segmentation;
 
+mod data_types;
 mod greetings;
 mod math;
 mod vehicles;
-mod data_types;
 
+use byteorder::{BigEndian, ReadBytesExt};
 use glam::Vec2;
 use greetings::english::greet;
 use hashbrown::HashMap;
 use rand::Rng;
+use std::cmp;
 use std::cmp::Ordering;
 use std::io;
 use std::{thread, time};
-use unicode_segmentation::UnicodeSegmentation;
-use byteorder::{BigEndian, ReadBytesExt};
 use unescape::unescape;
+use unicode_segmentation::UnicodeSegmentation;
 
-const DATA_SOURCE_URL: &str = "https://raw.githubusercontent.com/BernardIgiri/learn_more_rust/master/data/book.txt";
+const DATA_SOURCE_URL: &str =
+    "https://raw.githubusercontent.com/BernardIgiri/learn_more_rust/master/data/book.txt";
 
 fn main() {
     {
@@ -70,7 +72,32 @@ fn main() {
     let my_box = data_types::MyBox::new(5);
     println!("Box: {}", *my_box);
     println!("Story Time!");
-    read_story().unwrap();
+    match read_story() {
+        Ok(s) => println!("{}", s),
+        Err(e) => println!("Error {:?}", e),
+    }
+    println!(
+        "Match test\n{}\n{}\n{}\n{}\n",
+        match_stuff(3, "cat", -0.1),
+        match_stuff(8, "cat", 1.1),
+        match_stuff(2, "dog", 100.0),
+        match_stuff(0, "stick", -1.1)
+    );
+}
+
+fn match_stuff(n: u32, s: &str, f: f32) -> String {
+    match (n, s, f < 0.0) {
+        (1..=5, "cat", true) => {
+            "N is between 1 and 5, the string is \"cat\" and f is negative.".into()
+        }
+        (1..=10, "cat", false) => {
+            "N is between 1 & 10, the string is \"cat\" and f is positive.".into()
+        }
+        (2..=4, "dog", false) => {
+            "N is between 2 & 4, the string is \"dog\" and f is negative.".into()
+        }
+        _ => "something else".into(),
+    }
 }
 
 fn get_prize(score: u32) -> vehicles::cars::Car {
@@ -217,8 +244,50 @@ mod test {
     }
 }
 
+#[derive(Debug)]
+struct StringCount(String, u32);
+
+impl cmp::Ord for StringCount {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.1.cmp(&self.1)
+    }
+}
+
+impl cmp::PartialOrd for StringCount {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        other.1.partial_cmp(&self.1)
+    }
+}
+
+impl cmp::PartialEq for StringCount {
+    fn eq(&self, other: &Self) -> bool {
+        self.1 == other.1
+    }
+}
+
+impl cmp::Eq for StringCount {}
+
+fn top_n_entries(n: usize, map: &HashMap<String, u32>) -> Vec<StringCount> {
+    let mut top = Vec::new();
+    top.reserve_exact(n);
+    for (index, entry) in map.iter().enumerate() {
+        if index < n {
+            top.push(StringCount(entry.0.to_string(), entry.1.clone()));
+        } else {
+            if index == n {
+                top.sort();
+            }
+            if entry.1 > &top.get(0).unwrap().1 {
+                top.pop();
+                top.insert(0, StringCount(entry.0.to_string(), entry.1.clone()));
+            }
+        }
+    }
+    top
+}
+
 #[tokio::main]
-async fn read_story() -> Result<(), Box<dyn std::error::Error>> {
+async fn read_story() -> Result<String, Box<dyn std::error::Error>> {
     let resp = reqwest::get(DATA_SOURCE_URL)
         .await?
         .text_with_charset("utf-8")
@@ -226,6 +295,8 @@ async fn read_story() -> Result<(), Box<dyn std::error::Error>> {
     let story = unescape(&resp).unwrap();
     let words = word_freq(&story);
     let letters = letter_freq(&story);
-    println!("{}\n{:#?}\n{:?}", story, words, letters);
-    Ok(())
+    let words = top_n_entries(5, &words);
+    let letters = top_n_entries(5, &letters);
+    let out = format!("{}\n{:#?}\n{:#?}", story, words, letters);
+    Ok(out)
 }

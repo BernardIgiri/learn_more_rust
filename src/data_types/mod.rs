@@ -1,5 +1,5 @@
-use std::ops::Deref;
 use std::fmt::Display;
+use std::ops::Deref;
 
 pub struct MyBox<T: Display>(T);
 

@@ -45,8 +45,7 @@ impl Iterator for FibonacciSequence {
         self.n += 1;
         return match self.n {
             1 => Some(0),
-            2 => Some(1),
-            3 => Some(1),
+            2 | 3 => Some(1),
             _ => match self.previous.0.checked_add(self.previous.1) {
                 Some(v) => {
                     self.n = 3;
