@@ -1,9 +1,8 @@
+use super::math::*;
 use hashbrown::HashMap;
 use std::cmp;
 use std::cmp::Ordering;
 use unescape::unescape;
-use super::math::*;
-use tokio;
 
 #[derive(Debug)]
 struct StringCount(String, u32);
@@ -33,14 +32,14 @@ fn top_n_entries(n: usize, map: &HashMap<String, u32>) -> Vec<StringCount> {
     top.reserve_exact(n);
     for (index, entry) in map.iter().enumerate() {
         if index < n {
-            top.push(StringCount(entry.0.to_string(), entry.1.clone()));
+            top.push(StringCount(entry.0.to_string(), *entry.1));
         } else {
             if index == n {
                 top.sort();
             }
             if entry.1 > &top.get(0).unwrap().1 {
                 top.pop();
-                top.insert(0, StringCount(entry.0.to_string(), entry.1.clone()));
+                top.insert(0, StringCount(entry.0.to_string(), *entry.1));
             }
         }
     }

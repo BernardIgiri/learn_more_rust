@@ -13,10 +13,10 @@ pub fn fib(n: u64) -> Option<u64> {
 
 pub fn fib_inverse_rounded_up(n: u64) -> Option<u64> {
     let mut fib_it = FibonacciSequence::new();
-    return match fib_it.position(|value| value >= n) {
+    match fib_it.position(|value| value >= n) {
         Some(v) => Some(v as u64),
         None => None,
-    };
+    }
 }
 
 /// Finds the number v such that fib(v) = n given n
@@ -27,10 +27,10 @@ pub fn fib_inverse_rounded_up(n: u64) -> Option<u64> {
 /// ```
 pub fn fib_inverse(n: u64) -> Option<u64> {
     let mut fib_it = FibonacciSequence::new();
-    return match fib_it.position(|value| value == n) {
+    match fib_it.position(|value| value == n) {
         Some(v) => Some(v as u64),
         None => None,
-    };
+    }
 }
 
 impl FibonacciSequence {
@@ -46,7 +46,7 @@ impl Iterator for FibonacciSequence {
     type Item = u64;
     fn next(&mut self) -> Option<u64> {
         self.n += 1;
-        return match self.n {
+        match self.n {
             1 => Some(0),
             2 | 3 => Some(1),
             _ => match self.previous.0.checked_add(self.previous.1) {
@@ -58,7 +58,7 @@ impl Iterator for FibonacciSequence {
                 }
                 None => None,
             },
-        };
+        }
     }
 }
 

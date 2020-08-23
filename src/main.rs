@@ -2,20 +2,28 @@ mod data_types;
 mod greetings;
 mod guessing_game;
 mod math;
-mod vehicles;
 mod story;
+mod vehicles;
+mod my_macros;
 
 use byteorder::{BigEndian, ReadBytesExt};
 use greetings::english::greet;
-use std::io;
-use vehicles::drive::test_drive;
 use math::*;
+use std::io;
 use story::read_story;
+use vehicles::drive::test_drive;
 
 const DATA_SOURCE_URL: &str =
     "https://raw.githubusercontent.com/BernardIgiri/learn_more_rust/master/data/book.txt";
 
 fn main() {
+    {
+        let v = my_vec![1,2,3];
+        for n in v {
+            print!("{} ", n);
+        }
+        println!();
+    }
     {
         let buffer = [0u8, 10u8, 1u8, 1u8];
         let mut reader = io::Cursor::new(buffer);

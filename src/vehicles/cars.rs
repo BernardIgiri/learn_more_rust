@@ -1,4 +1,3 @@
-use glam;
 use glam::Vec2;
 
 const STEER_TIME: f32 = 15.0;
@@ -26,7 +25,7 @@ pub struct Car {
 
 impl Car {
     pub fn new_ferrari() -> Car {
-        return Car {
+        Car {
             name: "Ferrari".to_string(),
             power: 5.0,
             braking: 5.0,
@@ -36,10 +35,10 @@ impl Car {
             heading: Vec2::unit_x(),
             max_speed: 100.0,
             interpolation: 0.0,
-        };
+        }
     }
     pub fn new_mustang() -> Car {
-        return Car {
+        Car {
             name: "Mustang".to_string(),
             power: 3.0,
             braking: 4.0,
@@ -49,10 +48,10 @@ impl Car {
             heading: Vec2::unit_x(),
             max_speed: 80.0,
             interpolation: 0.0,
-        };
+        }
     }
     pub fn new_sedan() -> Car {
-        return Car {
+        Car {
             name: "Sedan".to_string(),
             power: 2.0,
             braking: 3.0,
@@ -62,10 +61,10 @@ impl Car {
             heading: Vec2::unit_x(),
             max_speed: 75.0,
             interpolation: 0.0,
-        };
+        }
     }
     pub fn new_pickup_truck() -> Car {
-        return Car {
+        Car {
             name: "Pickup Truck".to_string(),
             power: 2.5,
             braking: 3.0,
@@ -75,10 +74,10 @@ impl Car {
             heading: Vec2::unit_x(),
             max_speed: 70.0,
             interpolation: 0.0,
-        };
+        }
     }
     pub fn new_go_kart() -> Car {
-        return Car {
+        Car {
             name: "Go Kart".to_string(),
             power: 0.5,
             braking: 1.0,
@@ -88,10 +87,10 @@ impl Car {
             heading: Vec2::unit_x(),
             max_speed: 40.0,
             interpolation: 0.0,
-        };
+        }
     }
     pub fn new_mercedes() -> Car {
-        return Car {
+        Car {
             name: "Mercedes".to_string(),
             power: 3.0,
             braking: 3.0,
@@ -101,7 +100,7 @@ impl Car {
             heading: Vec2::unit_x(),
             max_speed: 90.0,
             interpolation: 0.0,
-        };
+        }
     }
 }
 
