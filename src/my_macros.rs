@@ -5,6 +5,7 @@ macro_rules! my_vec {
             let mut temp_vec = Vec::new();
             $(
                 temp_vec.push($x);
+                temp_vec.push($x);
             )*
             temp_vec
         }
@@ -17,8 +18,11 @@ mod tests {
     fn creates_vector() {
         let v = my_vec![1, 2, 3];
         assert_eq!(*v.get(0).unwrap(), 1);
-        assert_eq!(*v.get(1).unwrap(), 2);
-        assert_eq!(*v.get(2).unwrap(), 3);
-        assert_eq!(v.len(), 3);
+        assert_eq!(*v.get(1).unwrap(), 1);
+        assert_eq!(*v.get(2).unwrap(), 2);
+        assert_eq!(*v.get(3).unwrap(), 2);
+        assert_eq!(*v.get(4).unwrap(), 3);
+        assert_eq!(*v.get(5).unwrap(), 3);
+        assert_eq!(v.len(), 6);
     }
 }

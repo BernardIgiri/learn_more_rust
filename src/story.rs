@@ -46,7 +46,6 @@ fn top_n_entries(n: usize, map: &HashMap<String, u32>) -> Vec<StringCount> {
     top
 }
 
-#[tokio::main]
 pub async fn read_story(data_source: String) -> Result<String, Box<dyn std::error::Error>> {
     let resp = reqwest::get(&data_source)
         .await?

@@ -32,7 +32,11 @@ pub fn guessing_game(min: u32, max: u32) -> u32 {
 
 fn calc_score(guess_count: u32) -> u32 {
     let r = math::fib_inverse_rounded_up((guess_count - 1).into()).unwrap_or(0) as u32;
-    if r > 2 { r - 1 } else { r }
+    if r > 2 {
+        r - 1
+    } else {
+        r
+    }
 }
 
 #[cfg(test)]

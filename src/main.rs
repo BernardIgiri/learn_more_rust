@@ -2,15 +2,17 @@ mod data_types;
 mod greetings;
 mod guessing_game;
 mod math;
+mod my_macros;
 mod story;
 mod vehicles;
-mod my_macros;
 
 use byteorder::{BigEndian, ReadBytesExt};
 use greetings::english::greet;
 use math::*;
 use std::io;
+use std::{thread, time};
 use story::read_story;
+use tokio::sync::oneshot;
 use vehicles::drive::test_drive;
 
 const DATA_SOURCE_URL: &str =
@@ -18,7 +20,7 @@ const DATA_SOURCE_URL: &str =
 
 fn main() {
     {
-        let v = my_vec![1,2,3];
+        let v = my_vec![1, 2, 3];
         for n in v {
             print!("{} ", n);
         }
@@ -75,10 +77,7 @@ fn main() {
     let my_box = data_types::MyBox::new(5);
     println!("Box: {}", *my_box);
     println!("Story Time!");
-    match read_story(DATA_SOURCE_URL.into()) {
-        Ok(s) => println!("{}", s),
-        Err(e) => println!("Error {:?}", e),
-    }
+    wait_for_story();
     println!(
         "Match test\n{}\n{}\n{}\n{}\n",
         match_stuff(3, "cat", -0.1),
@@ -88,6 +87,29 @@ fn main() {
     );
     println!("Factors of three test:");
     play_with_numbers();
+}
+
+#[tokio::main]
+async fn wait_for_story() {
+    let delay_time = time::Duration::from_millis(50);
+    let (tx, mut rx) = oneshot::channel();
+    tokio::spawn(async move {
+        let result = match read_story(DATA_SOURCE_URL.into()).await {
+            Ok(story) => story,
+            Err(e) => e.to_string(),
+        };
+        tx.send(result).unwrap();
+    });
+    while match rx.try_recv() {
+        Err(_) => true,
+        Ok(story) => {
+            println!("{}", story);
+            false
+        }
+    } {
+        println!("Waiting for story...");
+        thread::sleep(delay_time);
+    }
 }
 
 fn match_stuff(n: u32, s: &str, f: f32) -> String {
