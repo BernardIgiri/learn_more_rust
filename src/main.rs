@@ -1,3 +1,5 @@
+#![allow(clippy::vec_init_then_push)]
+
 mod data_types;
 mod greetings;
 mod guessing_game;
