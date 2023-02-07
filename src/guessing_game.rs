@@ -5,7 +5,7 @@ use std::io;
 
 pub fn guessing_game(min: u32, max: u32) -> u32 {
     let mut guess_count = 0;
-    let secret = rand::thread_rng().gen_range(min, max + 1);
+    let secret = rand::thread_rng().gen_range(min..max + 1);
     println!("Guess a number from {} to {}.", min, max);
     let mut done = false;
     while !done {

@@ -3,7 +3,7 @@ use glam::Vec2;
 use std::{thread, time};
 
 fn format_vector(v: &Vec2) -> String {
-    format!("({x:0>7.03}, {y:0>7.03})", x = v.x(), y = v.y())
+    format!("({x:0>7.03}, {y:0>7.03})", x = v.x, y = v.y)
 }
 
 fn animate_drive<S: Into<String>>(car: &mut cars::Car, label: S, start: u32, end: u32) {

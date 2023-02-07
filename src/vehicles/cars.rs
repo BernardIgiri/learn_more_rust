@@ -31,8 +31,8 @@ impl Car {
             braking: 5.0,
             mass: 1.0,
             state: State::Idle,
-            velocity: Vec2::zero(),
-            heading: Vec2::unit_x(),
+            velocity: Vec2::ZERO.clone(),
+            heading: Vec2::X.clone(),
             max_speed: 100.0,
             interpolation: 0.0,
         }
@@ -44,8 +44,8 @@ impl Car {
             braking: 4.0,
             mass: 1.35,
             state: State::Idle,
-            velocity: Vec2::zero(),
-            heading: Vec2::unit_x(),
+            velocity: Vec2::ZERO.clone(),
+            heading: Vec2::X.clone(),
             max_speed: 80.0,
             interpolation: 0.0,
         }
@@ -57,8 +57,8 @@ impl Car {
             braking: 3.0,
             mass: 1.5,
             state: State::Idle,
-            velocity: Vec2::zero(),
-            heading: Vec2::unit_x(),
+            velocity: Vec2::ZERO.clone(),
+            heading: Vec2::X.clone(),
             max_speed: 75.0,
             interpolation: 0.0,
         }
@@ -70,8 +70,8 @@ impl Car {
             braking: 3.0,
             mass: 3.0,
             state: State::Idle,
-            velocity: Vec2::zero(),
-            heading: Vec2::unit_x(),
+            velocity: Vec2::ZERO.clone(),
+            heading: Vec2::X.clone(),
             max_speed: 70.0,
             interpolation: 0.0,
         }
@@ -83,8 +83,8 @@ impl Car {
             braking: 1.0,
             mass: 0.2,
             state: State::Idle,
-            velocity: Vec2::zero(),
-            heading: Vec2::unit_x(),
+            velocity: Vec2::ZERO.clone(),
+            heading: Vec2::X.clone(),
             max_speed: 40.0,
             interpolation: 0.0,
         }
@@ -96,8 +96,8 @@ impl Car {
             braking: 3.0,
             mass: 2.0,
             state: State::Idle,
-            velocity: Vec2::zero(),
-            heading: Vec2::unit_x(),
+            velocity: Vec2::ZERO.clone(),
+            heading: Vec2::X.clone(),
             max_speed: 90.0,
             interpolation: 0.0,
         }
@@ -141,7 +141,7 @@ impl Car {
     fn accelerate_by(&mut self, a: f32, t: f32) {
         let delta = self.heading * a * t;
         self.velocity = if a < 0.0 && delta.length() > self.velocity.length() {
-            Vec2::zero()
+            Vec2::ZERO.clone()
         } else {
             self.velocity + delta
         };
@@ -186,8 +186,8 @@ mod tests {
             ..test_car()
         };
         car.stop(0.2);
-        assert_eq!(car.velocity.y(), 0.0);
-        assert!(approx_eq!(f32, car.velocity.x(), 1.96, ulps = 2));
+        assert_eq!(car.velocity.y, 0.0);
+        assert!(approx_eq!(f32, car.velocity.x, 1.96, ulps = 2));
     }
 
     #[test]
@@ -198,23 +198,23 @@ mod tests {
             ..test_car()
         };
         car.stop(2000.0);
-        assert_eq!(car.velocity.y(), 0.0);
-        assert_eq!(car.velocity.x(), 0.0);
+        assert_eq!(car.velocity.y, 0.0);
+        assert_eq!(car.velocity.x, 0.0);
     }
 
     #[test]
     fn car_accelerate_increases_velocity() {
         let mut car = test_car();
         car.accelerate(0.2);
-        assert_eq!(car.velocity.y(), 0.0);
-        assert!(approx_eq!(f32, car.velocity.x(), 0.04, ulps = 2));
+        assert_eq!(car.velocity.y, 0.0);
+        assert!(approx_eq!(f32, car.velocity.x, 0.04, ulps = 2));
     }
 
     #[test]
     fn car_accelerate_does_not_pass_max_speed() {
         let mut car = test_car();
         car.accelerate(2000.0);
-        assert_eq!(car.velocity.y(), 0.0);
-        assert_eq!(car.velocity.x(), 50.0);
+        assert_eq!(car.velocity.y, 0.0);
+        assert_eq!(car.velocity.x, 50.0);
     }
 }
