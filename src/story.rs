@@ -37,7 +37,7 @@ fn top_n_entries(n: usize, map: &HashMap<String, u32>) -> Vec<StringCount> {
             if index == n {
                 top.sort();
             }
-            if entry.1 > &top.get(0).unwrap().1 {
+            if entry.1 > &top.first().unwrap().1 {
                 top.pop();
                 top.insert(0, StringCount(entry.0.to_string(), *entry.1));
             }
