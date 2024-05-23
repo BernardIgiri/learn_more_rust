@@ -10,6 +10,7 @@ mod vehicles;
 
 use byteorder::{BigEndian, ReadBytesExt};
 use greetings::english::greet;
+use hashbrown::HashSet;
 use math::*;
 use std::io;
 use std::{thread, time};
@@ -27,6 +28,31 @@ fn main() {
             print!("{} ", n);
         }
         println!();
+    }
+    {
+        let has_duplicates = [
+            (1, 1),
+            (1, 2),
+            (1, 2),
+            (1, 3),
+            (2, 1),
+            (2, 1),
+            (2, 2),
+            (2, 3),
+            (2, 3),
+            (2, 4),
+            (2, 4),
+            (2, 1),
+        ];
+        let mut set = HashSet::new();
+        let mut has_no_duplicates = Vec::new();
+
+        for item in has_duplicates {
+            if set.insert(item) {
+                has_no_duplicates.push(item);
+            }
+        }
+        println!("De-duplicated {:?}", has_no_duplicates);
     }
     {
         let buffer = [0u8, 10u8, 1u8, 1u8];
