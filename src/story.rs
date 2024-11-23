@@ -4,6 +4,7 @@ use std::cmp;
 use std::cmp::Ordering;
 use unescape::unescape;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct StringCount(String, u32);
 
@@ -15,7 +16,7 @@ impl cmp::Ord for StringCount {
 
 impl cmp::PartialOrd for StringCount {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        other.1.partial_cmp(&self.1)
+        Some(self.cmp(other))
     }
 }
 
